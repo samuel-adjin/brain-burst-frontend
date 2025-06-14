@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+@theme {
+
+  --color-primary-default: #1e1268;
+  --color-primary-light: #470cb4;
+  --color-btn-primary:#02d277;
+  --color-btn-secondary:#fa793a;
+  --color-btn-accent-light:#20b7fc;
+  --color-btn-accent:#0fafff;
+}
+
+:root {
+  background-color: #1e1268;
+}
+
+@layer base {
+  .content-container {
+    @apply max-w-[1440px] w-full mx-auto px-6;
+  }
+  .content-container-default {
+    @apply mx-auto flex justify-center items-center text-center h-screen
+  }
+}
