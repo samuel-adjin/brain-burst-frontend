@@ -1,9 +1,22 @@
 import Button from "../../../common/components/button";
 import {Login} from "../../../common/icons/login.tsx";
+import {useState} from "react";
 
 
 
 const LoginForm = () => {
+    const [form, setForm] = useState({ email: '', password: '' });
+    const[showPassword, setShowPassword] = useState(false);
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            // const user = await Auth.signIn(form.username, form.password);
+            console.log("User logged in", {email: form.email, password: form.password});
+        } catch (err) {
+            console.error("Login error", err);
+        }
+    };
+
     return (
         <div>
             <form className={"space-y-10"}>
@@ -12,23 +25,21 @@ const LoginForm = () => {
                         <div>
                             <label htmlFor="email" className={"text-sm"}>Email</label>
                         </div>
-                        <input type={"email"}
-                               className={"block w-64 outline-1 rounded-md py-2 focus:outline-white px-3 text-sm"}/>
+                        <input type={"email"} className={"input-field"} onChange={(e) => setForm({ ...form, email: e.target.value })}/>
                     </div>
                     <div className="flex flex-col justify-between items-start gap-2 mt-2 text-white">
                         <div>
                             <label htmlFor="password" className={"text-sm"}>Password</label>
                         </div>
-                        <input type={"password"}
-                               className={"block w-64 outline-1 rounded-md py-2 focus:outline-white px-3 text-sm"}/>
+                        <input type={showPassword ?"text" : "password"} className={"input-field"} onChange={(e) => setForm({ ...form, password: e.target.value })}/>
                     </div>
                    <div className={"flex justify-start text-white text-sm gap-2"}>
-                       <input type="checkbox"  value="show"/>
+                       <input type="checkbox"  onChange={(e: React.ChangeEvent<HTMLInputElement>)=>{setShowPassword(e.target.checked);}} value="show"/>
                        <label htmlFor="email">Show password</label>
                    </div>
 
                 </div>
-                <Button icon={<Login/>} label={"Login"} className={"bg-btn-accent-light w-64 py-5 rounded-r-3xl justify-center"}/>
+                <Button icon={<Login/>} label={"Login"} className={"bg-btn-accent-light w-64 py-5 rounded-r-3xl justify-center"} onClick={handleSubmit}/>
             </form>
 
         </div>

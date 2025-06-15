@@ -1,4 +1,3 @@
-// lib/mathQuestionGenerator.ts
 export type Operation = "+" | "-" | "*" | "/" | "%";
 
 export type MathQuestion = {

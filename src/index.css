@@ -21,4 +21,7 @@
   .content-container-default {
     @apply mx-auto flex justify-center items-center text-center h-screen
   }
+  .input-field{
+    @apply bg-white block w-64 outline-1 rounded-md py-2 focus:outline-white px-3 text-sm text-black;
+  }
 }

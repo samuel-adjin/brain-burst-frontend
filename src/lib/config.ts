@@ -1,0 +1,2 @@
+const DEFAULT_BACKEND_URL = "http://localhost:9000";
+const LAMBDA_BACKEND_URL = import.meta.env.VITE_LAMBDA_BACKEND_URL ?? DEFAULT_BACKEND_URL;
