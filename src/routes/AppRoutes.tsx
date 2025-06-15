@@ -6,21 +6,26 @@ import GameSelection from "../pages/GameSelection.tsx";
 import GameLayout from "../layout/templates/game";
 import Game from "../pages/Game.tsx";
 import GameWithLevel from "../pages/GameLevel.tsx";
+import AuthLayout from "../layout/templates/auth";
+import ForgotPassword from "../pages/ForgotPassword.tsx";
+import ResetPassword from "../pages/ResetPassword.tsx";
 
 const AppRoutes = () => {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/games" element={<GameLayout />}>
-                    <Route path="selection" element={<GameSelection />} />
-                    <Route path="game/:operator" element={<GameWithLevel />} />
-                    <Route path="game/:operator/:level" element={<Game />} />
+                <Route path="/games" element={<GameLayout/>}>
+                    <Route path="selection" element={<GameSelection/>}/>
+                    <Route path="game/:operator" element={<GameWithLevel/>}/>
+                    <Route path="game/:operator/:level" element={<Game/>}/>
                 </Route>
-                <Route path="/" element={<App />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/game" element={<GameSelection />} />
-
+                <Route path="/auth" element={<AuthLayout/>}>
+                    <Route path="login" element={<Login/>}/>
+                    <Route path="register" element={<Register/>}/>
+                    <Route path="forgot-password" element={<ForgotPassword/>}/>
+                    <Route path = "reset-password" element={<ResetPassword/>}/>
+                </Route>
+                <Route path="/" element={<App/>}/>
                 GameSelection
             </Routes>
         </BrowserRouter>

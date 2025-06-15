@@ -1,7 +1,9 @@
 import {Link, Outlet} from "react-router-dom";
 import {Logout} from "../../../features/common/icons/logout.tsx";
+import {useSessionExpiration} from "../../../lib/hooks/use-session-expired.tsx";
 
 const GameLayout = () => {
+    useSessionExpiration()
     return (
         <div className="content-container overflow-y-hidden h-screen">
             <div className={"flex justify-between my-5"}>

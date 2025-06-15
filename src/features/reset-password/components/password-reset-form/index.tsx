@@ -1,20 +1,21 @@
-import Button from "../../../common/components/button";
-import {Register} from "../../../common/icons/register.tsx";
 import {type ChangeEvent, type FormEvent, useState} from "react";
-import {register} from "../../../../lib/data/auth.ts";
+import Button from "../../../common/components/button";
+import {Login} from "../../../common/icons/login.tsx";
+import {resetUserPassword} from "../../../../lib/data/auth.ts";
 
-const RegisterForm = () => {
-    const [form, setForm] = useState({ email: '', password: '' , confirmPassword: '' });
+
+
+const PasswordResetForm = () => {
+    const [form, setForm] = useState({ password: '' , confirmPassword: '' });
     const[showPassword, setShowPassword] = useState(false);
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         try {
-            // const user = await Auth.signIn(form.username, form.password);
-            console.log("User logged in", form);
             if(form.password !== form.password) {
                 throw new Error("Passwords don't match");
             }
-            await register({email:form.email,password:form.password});
+            console.log("User logged in", form);
+            await resetUserPassword({email:"",password:form.password,confirmationCode:""});
         } catch (err) {
             console.error("Register error", err);
         }
@@ -23,12 +24,6 @@ const RegisterForm = () => {
         <div>
             <form className={"space-y-10"}>
                 <div className={"space-y-3"}>
-                    <div className="flex flex-col justify-between items-start gap-2 mt-2 text-white ">
-                        <div>
-                            <label htmlFor="email" className={"text-sm"}>Email</label>
-                        </div>
-                        <input type={"email"} className={"input-field"}  onChange={(e) => setForm({ ...form, email: e.target.value })}/>
-                    </div>
                     <div className="flex flex-col justify-between items-start gap-2 mt-2 text-white">
                         <div>
                             <label htmlFor="password" className={"text-sm"}>Password</label>
@@ -45,12 +40,11 @@ const RegisterForm = () => {
                         <input type="checkbox"  value="show" onChange={(e: ChangeEvent<HTMLInputElement>)=>{setShowPassword(e.target.checked);}}/>
                         <label htmlFor="email" className={"text-gray-500 text-sm"}>Show password</label>
                     </div>
+                    <Button icon={<Login/>} label={"Reset password"} className={"bg-btn-secondary w-64 py-5 rounded-r-3xl justify-center"} onClick={handleSubmit}/>
 
                 </div>
-                <Button icon={<Register/>} label={"Register"} className={"bg-btn-accent w-64 py-5 rounded-r-3xl justify-center"} onClick={handleSubmit}/>
             </form>
 
-        </div>
-    )
+        </div>)
 }
-export default RegisterForm
+export default PasswordResetForm

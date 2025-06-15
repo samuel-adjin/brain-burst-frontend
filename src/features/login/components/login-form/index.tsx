@@ -1,6 +1,7 @@
 import Button from "../../../common/components/button";
 import {Login} from "../../../common/icons/login.tsx";
 import {useState} from "react";
+import {Link} from "react-router-dom";
 
 
 
@@ -33,9 +34,14 @@ const LoginForm = () => {
                         </div>
                         <input type={showPassword ?"text" : "password"} className={"input-field"} onChange={(e) => setForm({ ...form, password: e.target.value })}/>
                     </div>
-                   <div className={"flex justify-start text-white text-sm gap-2"}>
-                       <input type="checkbox"  onChange={(e: React.ChangeEvent<HTMLInputElement>)=>{setShowPassword(e.target.checked);}} value="show"/>
-                       <label htmlFor="email">Show password</label>
+                   <div className={"flex justify-between text-gray-500 gap-2 text-sm"}>
+                       <div>
+                           <input type="checkbox"  onChange={(e: React.ChangeEvent<HTMLInputElement>)=>{setShowPassword(e.target.checked);}} value="show"/>
+                           <label htmlFor="email" className={"ml-1"}>Show password</label>
+                       </div>
+                       <Link to={"/auth/forgot-password"} className={"text-sm"}>
+                           <div>Forgot Password?</div>
+                       </Link>
                    </div>
 
                 </div>
