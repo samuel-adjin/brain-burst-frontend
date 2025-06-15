@@ -4,8 +4,8 @@ type ButtonProps = {
   icon?: ReactNode;
   label: string;
   className: string;
-  onClick?: (e) => void;
-  disabled?: boolean;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+    disabled?: boolean;
 };
 
 const Button = ({ icon, label, className,onClick,disabled }: ButtonProps) => {

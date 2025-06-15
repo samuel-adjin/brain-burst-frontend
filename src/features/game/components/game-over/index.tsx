@@ -10,7 +10,7 @@ type GameOverProps = {
 
 const GameOver = ({score}:GameOverProps) => {
     const handleRestart = () => {
-        localStorage.removeItem("game-state"); // optional
+        localStorage.removeItem("game-state");
         window.location.reload();
     };
     return (

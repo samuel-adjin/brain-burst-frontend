@@ -1,17 +1,7 @@
-import type {ReactNode} from "react";
-
-type ActionButtonProps ={
-    icon?: ReactNode;
-    label: string;
-    onClick?: () => void;
-    disabled?: boolean;
-    className?: string;
-}
+import type {ButtonProps} from "../../../../types/global.ts";
 
 
-
-
-const ActionButton = ({ icon, label, onClick, disabled, className }:ActionButtonProps) => {
+const ActionButton = ({ icon, label, onClick, disabled, className }:ButtonProps) => {
     return (
         <div className="relative inline-block">
             <button

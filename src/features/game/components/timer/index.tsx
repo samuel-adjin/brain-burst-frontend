@@ -17,8 +17,8 @@ const Timer = ({duration, isRunning, onComplete, keyTrigger,setTimeLeft,timeLeft
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
-        setTimeLeft(duration); // reset when key changes
-    }, [duration, keyTrigger]);
+        setTimeLeft(duration); 
+    }, [duration, keyTrigger, setTimeLeft]);
 
     useEffect(() => {
         if (isRunning && timeLeft > 0) {
