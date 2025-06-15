@@ -5,6 +5,7 @@ import Register from "../pages/Register.tsx";
 import GameSelection from "../pages/GameSelection.tsx";
 import GameLayout from "../layout/templates/game";
 import Game from "../pages/Game.tsx";
+import GameWithLevel from "../pages/GameLevel.tsx";
 
 const AppRoutes = () => {
     return (
@@ -12,8 +13,8 @@ const AppRoutes = () => {
             <Routes>
                 <Route path="/games" element={<GameLayout />}>
                     <Route path="selection" element={<GameSelection />} />
-                    <Route path="game/:operator" element={<Game />} />
-
+                    <Route path="game/:operator" element={<GameWithLevel />} />
+                    <Route path="game/:operator/:level" element={<Game />} />
                 </Route>
                 <Route path="/" element={<App />} />
                 <Route path="/login" element={<Login />} />

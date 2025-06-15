@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import {useEffect, useRef, type SetStateAction, type Dispatch} from "react";
 import {CircleTimer} from "../../../common/icons/circle-timer.tsx";
 
 type TimerProps = {
@@ -6,11 +6,12 @@ type TimerProps = {
     isRunning: boolean;
     onComplete?: () => void;
     keyTrigger?: number;
+    timeLeft:number;
+    setTimeLeft:  Dispatch<SetStateAction<number>>
 };
 
 
-const Timer = ({duration, isRunning, onComplete, keyTrigger}: TimerProps) => {
-    const [timeLeft, setTimeLeft] = useState(duration);
+const Timer = ({duration, isRunning, onComplete, keyTrigger,setTimeLeft,timeLeft}: TimerProps) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     const intervalRef = useRef<NodeJS.Timeout | null>(null);

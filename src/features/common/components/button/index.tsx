@@ -4,9 +4,11 @@ type ButtonProps = {
   icon?: ReactNode;
   label: string;
   className: string;
+  onClick?: (e) => void;
+  disabled?: boolean;
 };
 
-const Button = ({ icon, label, className }: ButtonProps) => {
+const Button = ({ icon, label, className,onClick,disabled }: ButtonProps) => {
   return (
     <div className="relative inline-block ">
       <button
@@ -14,6 +16,8 @@ const Button = ({ icon, label, className }: ButtonProps) => {
         style={{
           clipPath: "polygon(0 0, 100% 10%, 100% 90%, 0% 100%)",
         }}
+        onClick={onClick}
+        disabled={disabled}
       >
           {icon}
         {label}
