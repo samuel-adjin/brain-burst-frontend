@@ -1,22 +1,44 @@
 import Button from "../../../common/components/button";
 import {Login} from "../../../common/icons/login.tsx";
-import {useState} from "react";
+import {type FormEvent, useState} from "react";
 import {Link} from "react-router-dom";
-
+import {login} from "../../../../lib/data/auth.ts";
+import {useNavigate} from "react-router-dom";
+import {Bounce, toast, ToastContainer} from "react-toastify";
 
 
 const LoginForm = () => {
-    const [form, setForm] = useState({ email: '', password: '' });
-    const[showPassword, setShowPassword] = useState(false);
-    const handleSubmit = async (e: React.FormEvent) => {
+    const [form, setForm] = useState({email: '', password: ''});
+    const [showPassword, setShowPassword] = useState(false);
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         try {
-            // const user = await Auth.signIn(form.username, form.password);
-            console.log("User logged in", {email: form.email, password: form.password});
+            const isSignedIn = await login({email: form.email, password: form.password});
+            if (isSignedIn) {
+                setForm({email: '', password: ''})
+                navigate("/games/selection")
+                return;
+            }
+            toast.error('Password or Email is incorrect.', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                transition: Bounce,
+            });
+            setForm({...form, password: ""})
         } catch (err) {
             console.error("Login error", err);
+            setForm({...form, password: ''})
+
         }
-    };
+    }
 
     return (
         <div>
@@ -26,28 +48,44 @@ const LoginForm = () => {
                         <div>
                             <label htmlFor="email" className={"text-sm"}>Email</label>
                         </div>
-                        <input type={"email"} className={"input-field"} onChange={(e) => setForm({ ...form, email: e.target.value })}/>
+                        <input type={"email"} className={"input-field"} value={form.email} onChange={(e) => setForm({...form, email: e.target.value})}/>
                     </div>
                     <div className="flex flex-col justify-between items-start gap-2 mt-2 text-white">
                         <div>
                             <label htmlFor="password" className={"text-sm"}>Password</label>
                         </div>
-                        <input type={showPassword ?"text" : "password"} className={"input-field"} onChange={(e) => setForm({ ...form, password: e.target.value })}/>
+                        <input type={showPassword ? "text" : "password"} className={"input-field"} value={form.password} onChange={(e) => setForm({...form, password: e.target.value})}/>
                     </div>
-                   <div className={"flex justify-between text-gray-500 gap-2 text-sm"}>
-                       <div>
-                           <input type="checkbox"  onChange={(e: React.ChangeEvent<HTMLInputElement>)=>{setShowPassword(e.target.checked);}} value="show"/>
-                           <label htmlFor="email" className={"ml-1"}>Show password</label>
-                       </div>
-                       <Link to={"/auth/forgot-password"} className={"text-sm"}>
-                           <div>Forgot Password?</div>
-                       </Link>
-                   </div>
+                    <div className={"flex justify-between text-gray-500 gap-2 text-sm"}>
+                        <div>
+                            <input type="checkbox"  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                setShowPassword(e.target.checked);
+                            }} value="show"/>
+                            <label htmlFor="email" className={"ml-1"}>Show password</label>
+                        </div>
+                        <Link to={"/auth/forgot-password"} className={"text-sm"}>
+                            <div>Forgot Password?</div>
+                        </Link>
+                    </div>
 
                 </div>
-                <Button icon={<Login/>} label={"Login"} className={"bg-btn-accent-light w-64 py-5 rounded-r-3xl justify-center"} onClick={handleSubmit}/>
+                <Button icon={<Login/>} label={"Login"}
+                        className={"bg-btn-accent-light w-64 py-5 rounded-r-3xl justify-center"}
+                        onClick={handleSubmit}/>
             </form>
-
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick={false}
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="colored"
+                transition={Bounce}
+            />
         </div>
     )
 }

@@ -1,22 +1,28 @@
 import Button from "../../../common/components/button";
 import {Register} from "../../../common/icons/register.tsx";
 import {type ChangeEvent, type FormEvent, useState} from "react";
-import {register} from "../../../../lib/data/auth.ts";
+import {register, signUpErrorHandler} from "../../../../lib/data/auth.ts";
+import {useNavigate} from "react-router-dom";
+import {Bounce, ToastContainer} from "react-toastify";
 
 const RegisterForm = () => {
     const [form, setForm] = useState({ email: '', password: '' , confirmPassword: '' });
     const[showPassword, setShowPassword] = useState(false);
+    const navigate = useNavigate();
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         try {
-            // const user = await Auth.signIn(form.username, form.password);
-            console.log("User logged in", form);
-            if(form.password !== form.password) {
+            if(form.password !== form.confirmPassword) {
                 throw new Error("Passwords don't match");
             }
-            await register({email:form.email,password:form.password});
+            const isRegistered = await register({email:form.email,password:form.password});
+            if(isRegistered){
+                setForm({ email: '', password: '' , confirmPassword: '' })
+                navigate("/auth/confirm-sign-up");
+            }
+
         } catch (err) {
-            console.error("Register error", err);
+            await signUpErrorHandler(err as Error);
         }
     };
     return (
@@ -49,7 +55,20 @@ const RegisterForm = () => {
                 </div>
                 <Button icon={<Register/>} label={"Register"} className={"bg-btn-accent w-64 py-5 rounded-r-3xl justify-center"} onClick={handleSubmit}/>
             </form>
-
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick={false}
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="colored"
+                transition={Bounce}
+                className={"text-sm"}
+            />
         </div>
     )
 }

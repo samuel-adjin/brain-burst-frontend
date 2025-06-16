@@ -1,108 +1,155 @@
-import { signIn,signUp,signOut,confirmSignUp,fetchAuthSession,autoSignIn,resetPassword,confirmResetPassword    } from 'aws-amplify/auth';
+import {
+    signIn,
+    signUp,
+    signOut,
+    confirmSignUp,
+    fetchAuthSession,
+    resetPassword,
+    confirmResetPassword,
+    resendSignUpCode
+} from 'aws-amplify/auth';
+import {toast} from "react-toastify";
 
-export const login = async (form:{email:string,password:string})=>{
+export const login = async (form: { email: string, password: string }) => {
     try {
-        const user = signIn({ username: form.email, password: form.password });
-        console.log("User logged in", user);
+        const {isSignedIn} = await signIn({username: form.email, password: form.password});
+        toast.success("Login successful!");
+        return isSignedIn;
     } catch (err) {
         console.error("Login error", err);
+        return null;
     }
 }
 
-export const register = async (form:{email:string,password:string})=>{
+export const register = async (form: { email: string, password: string }) => {
     try {
-        const { isSignUpComplete, userId, nextStep } = await signUp({
+        const {nextStep} = await signUp({
             username: form.email,
             password: form.password,
             options: {
                 userAttributes: {
                     email: form.email,
                 },
+                autoSignIn: true,
             }
         });
-console.log("User registered", isSignUpComplete, userId, nextStep);
-    }catch(err){
-        console.error("Register error", err);
+        toast.success("Register successful!");
+        sessionStorage.setItem('temp_auth_password', form.password);
+        sessionStorage.setItem('temp_auth_email', form.email);
+        return nextStep.signUpStep == 'CONFIRM_SIGN_UP'
+    } catch (err) {
+        await signUpErrorHandler(err as Error);
     }
 }
 
-export const logout = async ()=>{
-        try {
-            await signOut()
-        }catch(err){
-            console.error("SignOut error", err);
-        }
+export const logout = async () => {
+    try {
+        await signOut()
+    } catch (err) {
+        console.error("SignOut error", err);
+    }
 }
 
-export const confirmAccount = async (form:{email:string,code:string})=>{
+export const confirmUserAccount = async (code: string) => {
     try {
-        const { isSignUpComplete, nextStep } = await confirmSignUp({
-            username: form.email,
-            confirmationCode: form.code,
+        const email = sessionStorage.getItem('temp_auth_email');
+        const password = sessionStorage.getItem('temp_auth_password');
+        if (!email || !password) {
+            throw new Error('Missing stored credentials');
+        }
+        const {isSignUpComplete} = await confirmSignUp({
+            username: email,
+            confirmationCode: code,
         });
-        if(isSignUpComplete){
-            await autoSignIn()
+
+        if (isSignUpComplete) {
+            await login({email: email, password: password});
         }
-        console.log("User confirmAccount", isSignUpComplete, nextStep);
-    }catch(err){
+        sessionStorage.removeItem('temp_auth_password');
+        sessionStorage.removeItem('temp_auth_email');
+        return true;
+    } catch (err) {
         console.error("ConfirmSignUp error", err);
+        const error = err as Error;
+        if (error.name === 'ExpiredCodeException') {
+            console.log("Code expired, requesting new code...");
+        }
+        return false;
     }
 }
 
-export const forgotPassword = async (email:string)=>{
+export const forgotPassword = async (email: string) => {
     try {
-        const{nextStep,isPasswordReset} = await resetPassword({
+        const {nextStep, isPasswordReset} = await resetPassword({
             username: email
         });
-        console.log(nextStep,isPasswordReset);
-    }catch(err){
+        return {nextStep, isPasswordReset};
+    } catch (err ) {
         console.error("ForgotPasswordError", err);
+        const error = err as Error;
+        toast.error(error.message);
     }
 }
 
-export const resetUserPassword = async (form:{email:string,password:string,confirmationCode:string,})=>{
+export const resetUserPassword = async (form: { email: string, password: string, confirmationCode: string, }) => {
     try {
-         await confirmResetPassword({
+        await confirmResetPassword({
             username: form.email,
             confirmationCode: form.confirmationCode,
             newPassword: form.password,
         });
-    }catch(err){
+    } catch (err) {
         console.error("ResetPasswordError", err);
     }
 }
 
-export const getAuthHeaders = async ()=> {
-    try{
+export const getAuthHeaders = async () => {
+    try {
         const session = await fetchAuthSession();
-        if(!session){
+        if (!session || !session.tokens) {
             return {};
         }
         const idToken = session.tokens?.idToken;
-        const accessToken = session.tokens?.accessToken;
-        console.log("Access Token", accessToken);
-        console.log("Id Token", idToken);
-        return { authorization: `Bearer ${accessToken}` }
-    }catch(err){
+
+        return {authorization: `Bearer ${idToken}`} as HeadersInit | undefined
+    } catch (err) {
         return {};
         console.warn(err)
     }
 }
 
-
-
-const isSessionExpired = async () => {
+export const resendConfirmation = async (email: string) => {
     try {
-        const session = await fetchAuthSession();
-
-        const expirationDate = session.credentials?.expiration;
-        if (!expirationDate) return true; // If we can't determine expiration, treat it as expired
-
-        const now = new Date();
-
-        return expirationDate.getTime() < now.getTime();
-    } catch (error) {
-        console.error('Failed to fetch session:', error);
-        return true; // Assume expired if fetching session fails
+   await resendSignUpCode({
+            username: email,
+        })
+        toast.success('Confirmation email resent successful!');
+    }catch (err) {
+        console.error("ResendConfirmationError", err);
     }
-};
+}
+
+export const signUpErrorHandler = async (error: Error) => {
+    console.log({errorHere:error});
+    switch (error.name) {
+        case "UsernameExistsException":
+            toast.warning("An account with this email already exists.");
+            break;
+
+        case "InvalidPasswordException":
+            toast.error("Password must be at least 5 characters long and include uppercase, lowercase, a number, and a special character.");
+            break;
+
+        case "InvalidParameterException":
+            toast.error("Invalid signup input. Please check all fields.");
+            break;
+
+        case "LimitExceededException":
+            toast.warning("Too many attempts. Please try again later.");
+            break;
+
+        default:
+            toast.error("Signup failed. Please try again.");
+            console.error("Unhandled signup error:", error);
+    }
+}

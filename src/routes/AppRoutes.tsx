@@ -9,6 +9,7 @@ import GameWithLevel from "../pages/GameLevel.tsx";
 import AuthLayout from "../layout/templates/auth";
 import ForgotPassword from "../pages/ForgotPassword.tsx";
 import ResetPassword from "../pages/ResetPassword.tsx";
+import ConfirmAccountTemplate from "../features/confirm-sign-up/templates";
 
 const AppRoutes = () => {
     return (
@@ -23,10 +24,10 @@ const AppRoutes = () => {
                     <Route path="login" element={<Login/>}/>
                     <Route path="register" element={<Register/>}/>
                     <Route path="forgot-password" element={<ForgotPassword/>}/>
-                    <Route path = "reset-password" element={<ResetPassword/>}/>
+                    <Route path="reset-password" element={<ResetPassword/>}/>
+                    <Route path="confirm-sign-up" element={<ConfirmAccountTemplate/>}/>
                 </Route>
                 <Route path="/" element={<App/>}/>
-                GameSelection
             </Routes>
         </BrowserRouter>
     )

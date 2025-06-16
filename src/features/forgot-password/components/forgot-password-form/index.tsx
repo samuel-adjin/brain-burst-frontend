@@ -4,6 +4,7 @@ import {Login} from "../../../common/icons/login.tsx";
 import {forgotPassword} from "../../../../lib/data/auth.ts";
 import {Link} from "react-router-dom";
 import {useNavigate} from "react-router-dom";
+import {Bounce, ToastContainer} from "react-toastify";
 
 const ForgotPasswordForm = () => {
     const navigate = useNavigate();
@@ -12,8 +13,10 @@ const ForgotPasswordForm = () => {
         e.preventDefault();
         try {
             console.log("User logged in", email);
-            await forgotPassword(email)
-            navigate("/auth/reset-password")
+          const result = await forgotPassword(email)
+            if(result){
+                navigate("/auth/reset-password")
+            }
         } catch (err) {
             console.error("Login error", err);
         }
@@ -30,10 +33,10 @@ const ForgotPasswordForm = () => {
                         <div>
                             <label htmlFor="email" className={"text-sm"}>Email</label>
                         </div>
-                        <input type={"email"} className={"input-field w-[20vw]"} onChange={(e) =>setEmail(e.target.value)} required={true}/>
+                        <input type={"email"} className={"input-field lg:w-[20vw]"} onChange={(e) =>setEmail(e.target.value)} required={true}/>
                     </div>
                 <div className={"flex justify-start"}>
-                    <Button icon={<Login/>} label={"Reset password"} className={"bg-btn-accent-light w-[20vw] py-5 rounded-r-3xl justify-center"} onClick={handleSubmit}/>
+                    <Button icon={<Login/>} label={"Reset password"} className={"bg-btn-accent-light w-[60vw] lg:w-[20vw] py-5 rounded-r-3xl justify-center"} onClick={handleSubmit}/>
                 </div>
                 </form>
                 <Link to="/auth/login">
@@ -42,6 +45,20 @@ const ForgotPasswordForm = () => {
                     </div>
                 </Link>
             </div>
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick={false}
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="colored"
+                transition={Bounce}
+                className={"text-sm"}
+            />
         </div>
     )
 }

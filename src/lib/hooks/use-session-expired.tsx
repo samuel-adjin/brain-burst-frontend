@@ -1,41 +1,44 @@
 import { useEffect, useState } from "react";
-import { fetchAuthSession, signOut } from "aws-amplify/auth";
-import { useNavigate } from "react-router-dom"; // or useRouter() if using Next.js
+import { fetchAuthSession, getCurrentUser, signOut } from "aws-amplify/auth";
+import { useNavigate } from "react-router-dom";
 
 export const useSessionExpiration = () => {
     const [isExpired, setIsExpired] = useState(false);
-    const navigate = useNavigate(); // or useRouter() for Next.js
+    const navigate = useNavigate();
 
     useEffect(() => {
         const checkSession = async () => {
             try {
-                const session = await fetchAuthSession();
-                const expirationDate = session.credentials?.expiration;
+                const session = await fetchAuthSession({ forceRefresh: true });
 
-                if (!expirationDate) {
+                if (!session.tokens) {
                     setIsExpired(true);
                     await signOut();
-                    navigate("/login");
+                    navigate("/auth/login");
                     return;
                 }
 
-                const now = new Date();
+                await getCurrentUser();
+                setIsExpired(false);
 
-                if (expirationDate.getTime() < now.getTime()) {
+            } catch (err) {
+                console.error("Session check failed:", err);
+                const error = err as Error;
+                if (
+                    error.name === 'NotAuthorizedException' ||
+                    error.name === 'UserNotConfirmedException' ||
+                    error.name === 'TokenRefreshException' ||
+                    error.message?.includes('refresh token')
+                ) {
+                    console.log("Authentication expired, logging out");
                     setIsExpired(true);
                     await signOut();
-                    navigate("/login");
+                    navigate("/auth/login");
                 }
-            } catch (err) {
-                console.error("Error checking session:", err);
-                setIsExpired(true);
-                await signOut();
-                navigate("/login");
             }
         };
-
-        const interval = setInterval(checkSession, 60 * 1000); // check every 1 min
-        checkSession(); // initial check on mount
+        checkSession();
+        const interval = setInterval(checkSession, 10 * 60 * 1000); // Check every 10 minutes
 
         return () => clearInterval(interval);
     }, [navigate]);

@@ -1,13 +1,32 @@
 import Timer from "../../components/timer";
 import ScoreTracker from "../../components/score-tracker";
 import QuestionDisplay from "../../components/question-display";
-import UserLife, { TOTAL_LIVES } from "../../components/life";
-import { Suspense, useEffect, useState } from "react";
-import { generateMathQuestion, type MathQuestion, type Operation } from "../../../../lib/data/questions.ts";
-import { useParams } from "react-router-dom";
-import { GAME_TYPES } from "../../../../types/global.ts";
+import UserLife, {TOTAL_LIVES} from "../../components/life";
+import {Suspense, useCallback, useEffect, useState} from "react";
+import {type Operation} from "../../../../lib/data/questions.ts";
+import {useParams} from "react-router-dom";
 import AnswerInput from "../../components/answer-input";
 import GameOver from "../../components/game-over";
+import {fetchGame, setUserScore} from "../../../../lib/data/game.tsx";
+
+type GameQuestion = {
+    question: string,
+    answer: number,
+    level: string,
+    operation: Operation
+}
+
+type SavedGameState = {
+    questionNumber: number;
+    score: number;
+    lives: number;
+    timeLeft: number;
+    operator: string;
+    level: string;
+    question: GameQuestion | null;
+}
+
+const STORAGE_KEY = "math-game-state";
 
 const GameTemplate = () => {
     const [lives, setLives] = useState(TOTAL_LIVES);
@@ -15,9 +34,8 @@ const GameTemplate = () => {
     const [isGameOver, setIsGameOver] = useState(false);
     const [timeLeft, setTimeLeft] = useState(30);
     const [isAnswered, setIsAnswered] = useState(false);
-    const { operator, level } = useParams();
-    const [operand, setOperand] = useState<Operation>();
-    const [question, setQuestion] = useState<MathQuestion | null>(null);
+    const {operator, level} = useParams();
+    const [question, setQuestion] = useState<GameQuestion | null>(null);
     const [questionNumber, setQuestionNumber] = useState(1);
     const [isRunning, setIsRunning] = useState(true);
     const [keyTrigger, setKeyTrigger] = useState(0);
@@ -26,84 +44,82 @@ const GameTemplate = () => {
     const [hideInput, setHideInput] = useState(false);
     const [correctAnswerTextShow, setCorrectAnswerTextShow] = useState(false);
     const [userTimedOut, setUserTimedOut] = useState(false);
-    const [loadedFromStorage, setLoadedFromStorage] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [hasInitialized, setHasInitialized] = useState(false);
 
-    // Load saved state
     useEffect(() => {
-        const saved = localStorage.getItem("game-state");
-        if (saved) {
+        const loadSavedState = () => {
             try {
-                const parsed = JSON.parse(saved);
-                setQuestionNumber(parsed.questionNumber || 1);
-                setScore(parsed.score || 0);
-                setLives(parsed.lives ?? TOTAL_LIVES);
-                setQuestion(parsed.question || null);
-                setUserAnswer(parsed.userAnswer || 0);
-                setOperand(parsed.operand || "+");
-                setTimeLeft(parsed.timeLeft || 30);
-                setLoadedFromStorage(true);
-            } catch (e) {
-                console.error("Failed to load saved state", e);
-                setLoadedFromStorage(true); // fallback to allow game to start
-            }
-        } else {
-            setLoadedFromStorage(true); // allow game to start fresh
-        }
-    }, []);
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved && operator && level) {
+                    const parsedState: SavedGameState = JSON.parse(saved);
 
-    // Save state
+                    if (parsedState.operator === operator && parsedState.level === level) {
+                        setQuestionNumber(parsedState.questionNumber);
+                        setScore(parsedState.score);
+                        setLives(parsedState.lives);
+                        setTimeLeft(parsedState.timeLeft);
+                        setQuestion(parsedState.question);
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load saved state:', error);
+                localStorage.removeItem(STORAGE_KEY);
+            }
+            setHasInitialized(true);
+        };
+
+        if (operator && level) {
+            loadSavedState();
+        }
+    }, [operator, level]);
+
     useEffect(() => {
-        if (!isGameOver && operand) {
-            const state = {
+        if (hasInitialized && operator && level && !isGameOver) {
+            const stateToSave: SavedGameState = {
                 questionNumber,
                 score,
                 lives,
-                question,
-                userAnswer,
-                operand,
-                level,
                 timeLeft,
+                operator,
+                level,
+                question
             };
-            localStorage.setItem("game-state", JSON.stringify(state));
-        }
-    }, [questionNumber, score, lives, question, userAnswer, operand, level, timeLeft, isGameOver]);
 
-    // Clear state when game is over
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+        }
+    }, [hasInitialized, questionNumber, score, lives, timeLeft, question, operator, level, isGameOver]);
+
     useEffect(() => {
-        if (isGameOver) {
-            localStorage.removeItem("game-state");
+        const saveScore = async ()=>{
+            if (isGameOver) {
+                localStorage.removeItem(STORAGE_KEY);
+                await setUserScore(score,level ?? "")
+            }
         }
-    }, [isGameOver]);
+        saveScore();
+    }, [isGameOver, score]);
 
-    // Determine operand from URL param
+    const fetchNewQuestion = useCallback(async () => {
+        if (!operator || !level) return;
+
+        setIsLoading(true);
+        try {
+            const gameQuestion = await fetchGame(level, operator.toLowerCase());
+            setQuestion(gameQuestion);
+        } catch (error) {
+            console.error('Failed to fetch question:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [operator, level]);
+
     useEffect(() => {
-        switch (operator) {
-            case GAME_TYPES.ADDITION:
-                setOperand("+");
-                break;
-            case GAME_TYPES.SUBTRACTION:
-                setOperand("-");
-                break;
-            case GAME_TYPES.MULTIPLICATION:
-                setOperand("*");
-                break;
-            case GAME_TYPES.DIVISION:
-                setOperand("/");
-                break;
-            default:
-                throw new Error("Unsupported operator");
+        if (hasInitialized && operator && level && !question && !isLoading && !isGameOver) {
+            fetchNewQuestion();
         }
-    }, [operator]);
+    }, [hasInitialized, operator, level, question, isLoading, isGameOver, fetchNewQuestion]);
 
-    // Generate new question only if not restoring
-    useEffect(() => {
-        if (operand && loadedFromStorage && question === null) {
-            const q = generateMathQuestion(1, operand);
-            setQuestion(q);
-        }
-    }, [operand, loadedFromStorage]);
-
-    // Timer handler
     const handleTimeout = () => {
         if (!isAnswered) {
             setIsRunning(false);
@@ -112,56 +128,85 @@ const GameTemplate = () => {
         }
     };
 
-    // Handle answer result and move to next
     useEffect(() => {
-        const next = (operand: Operation) => {
-            const newNumber = questionNumber + 1;
-            setQuestion(generateMathQuestion(newNumber, operand));
-            setQuestionNumber(newNumber);
-        };
+        if (!isAnswered || !question) return;
+        const isCorrect = !userTimedOut && question.answer === userAnswer;
+        setHideInput(true);
+        setShowCorrectAnswer(!isCorrect);
+        setCorrectAnswerTextShow(isCorrect);
 
-        if (isAnswered && operand) {
-            const isCorrect = !userTimedOut && question?.answer === userAnswer;
-            setHideInput(true);
-            setShowCorrectAnswer(!isCorrect);
-            setCorrectAnswerTextShow(isCorrect);
-
-            const timeout = setTimeout(() => {
-                if (isCorrect) {
-                    setScore((prev) => prev + 10);
-                } else {
-                    setLives((prev) => {
-                        const updated = Math.max(prev - 1, 0);
-                        if (updated === 0) {
-                            setIsGameOver(true);
-                            setIsRunning(false);
-                        }
+        const timeout = setTimeout(async () => {
+            // Update score and lives
+            if (isCorrect) {
+                setScore(prev => {
+                    return prev + 10;
+                });
+            } else {
+                setLives(prev => {
+                    const updated = Math.max(prev - 1, 0);
+                    if (updated === 0) {
+                        setIsGameOver(true);
+                        setIsRunning(false);
                         return updated;
-                    });
-                }
+                    }
+                    return updated;
+                });
+            }
 
+            if (lives > 1 || isCorrect) {
                 setShowCorrectAnswer(false);
                 setCorrectAnswerTextShow(false);
-                setKeyTrigger((prev) => prev + 1); // restart timer
-                setIsRunning(true);
-                setIsAnswered(false);
                 setHideInput(false);
                 setUserTimedOut(false);
-                next(operand);
-            }, 2000);
+                setIsAnswered(false);
+                setUserAnswer(0);
+                setTimeLeft(30);
+                setKeyTrigger(prev => prev + 1);
+                setIsRunning(true);
+                setQuestionNumber(prev => {
+                    return prev + 1;
+                });
+                setQuestion(null);
+            }
+        }, 2000);
 
-            return () => clearTimeout(timeout);
+        return () => clearTimeout(timeout);
+    }, [isAnswered, question, userAnswer, userTimedOut, lives]);
+
+    useEffect(() => {
+        if (hasInitialized && !question && !isLoading && !isGameOver && questionNumber > 1) {
+            fetchNewQuestion();
         }
-    }, [isAnswered, question, userAnswer, operand, questionNumber, userTimedOut]);
+    }, [question, hasInitialized, isLoading, isGameOver, questionNumber, fetchNewQuestion]);
+
+    if (!hasInitialized) {
+        return (
+            <div className={"mt-5 text-white"}>
+                <div className={"mx-auto flex flex-col justify-center items-center"}>
+                    <div>Initializing game...</div>
+                </div>
+            </div>
+        );
+    }
+
+    if (isGameOver) {
+        return (
+            <div className={"mt-5 text-white"}>
+                <div className={"mx-auto flex flex-col justify-center items-center"}>
+                    <GameOver score={score}/>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={"mt-5 text-white lg:space-y-32 space-y-20"}>
             <div className={"flex justify-around"}>
                 <div>
-                    <ScoreTracker score={score} />
+                    <ScoreTracker score={score}/>
                 </div>
                 <div>
-                    <UserLife lives={lives} />
+                    <UserLife lives={lives}/>
                 </div>
                 <div>
                     <Timer
@@ -174,19 +219,22 @@ const GameTemplate = () => {
                     />
                 </div>
             </div>
-            <div className={" mx-auto flex flex-col justify-center items-center"}>
+            <div className={"mx-auto flex flex-col justify-center items-center"}>
                 <Suspense fallback={<div>Loading...</div>}>
-                    {question && !isGameOver ? (
+                    {isLoading ? (
+                        <div>Loading question...</div>
+                    ) : question ? (
                         <QuestionDisplay
                             question={question.question}
                             answer={showCorrectAnswer ? question.answer : null}
                             correctAnswerTextShow={correctAnswerTextShow}
+                            questionNumber={questionNumber}
                         />
                     ) : (
-                        <GameOver score={score} />
+                        <div>Loading...</div>
                     )}
                 </Suspense>
-                {!hideInput && !isGameOver && (
+                {!hideInput && question && (
                     <div>
                         <AnswerInput
                             setIsAnswered={setIsAnswered}
