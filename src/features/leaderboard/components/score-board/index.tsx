@@ -27,7 +27,7 @@ const ScoreBoard = () => {
 
     return (
        <div>
-           <div className="space-y-5 flex justify-around">
+           <div className="space-y-5 flex lg:flex-row flex-col justify-around">
                {
                    LEVELS.map((level:Difficulty, index) => {
                        const leaderboard = score ? score[level ] : []
