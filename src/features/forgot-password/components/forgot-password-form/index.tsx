@@ -12,7 +12,6 @@ const ForgotPasswordForm = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            console.log("User logged in", email);
           const result = await forgotPassword(email)
             if(result){
                 navigate("/auth/reset-password")

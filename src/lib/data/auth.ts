@@ -66,13 +66,16 @@ export const confirmUserAccount = async (code: string) => {
         }
         sessionStorage.removeItem('temp_auth_password');
         sessionStorage.removeItem('temp_auth_email');
+        toast.success('Account confirmed successfully!');
         return true;
     } catch (err) {
         console.error("ConfirmSignUp error", err);
         const error = err as Error;
         if (error.name === 'ExpiredCodeException') {
             console.log("Code expired, requesting new code...");
+            toast.error("Code expired, requesting new code...")
         }
+        toast.error("Confirm sign up error")
         return false;
     }
 }

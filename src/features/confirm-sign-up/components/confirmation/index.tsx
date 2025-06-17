@@ -10,11 +10,14 @@ const ConfirmAccount = () => {
     const [code, setCode] = useState("")
     const navigate = useNavigate();
     const email = sessionStorage.getItem('temp_auth_email');
+    const[loading, setLoading] = useState<boolean>(false);
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         try {
+
         const isVerified = await confirmUserAccount(code)
             if(isVerified){
+                setLoading(true);
                 navigate("/games/selection")
             }
         } catch (err) {
@@ -24,7 +27,7 @@ const ConfirmAccount = () => {
 
     const resendCode = async (e: FormEvent) => {
         e.preventDefault();
-        toast.info("Resending Code...");
+        // toast.info("Resending Code...");
         await resendConfirmation(email ?? "")
         toast.success("Confirmation code sent successfully!");
 
@@ -48,10 +51,12 @@ const ConfirmAccount = () => {
                         </div>
                         <input type={"email"} className={"input-field outline-black hover:outline-black"} onChange={(e) => setCode(e.target.value)}/>
                     </div>
-                    <div className={"flex justify-start mt-5 gap-x-5 text-sm lg:text-md"}>
-                        <Button label={"Confirm"} className={`bg-btn-accent `}  onClick={handleSubmit}/>
-                        <Button label={"Resend"} className={`bg-btn-secondary `}  onClick={resendCode}/>
-                    </div>
+                    { !loading ?
+                        <div className={"flex justify-start mt-5 gap-x-5 text-sm lg:text-md"}>
+                            <Button label={"Confirm"} className={`bg-btn-accent `}  onClick={handleSubmit}/>
+                            <Button label={"Resend"} className={`bg-btn-secondary `}  onClick={resendCode}/>
+                        </div> : <div>Loading...</div>
+                    }
                 </div>
             </form>
             <ToastContainer

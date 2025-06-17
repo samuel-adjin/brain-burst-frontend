@@ -1,4 +1,35 @@
 @import "tailwindcss";
+@font-face {
+  font-family: 'Baloo 2';
+  src: url('/fonts/baloo2/Baloo2-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Baloo 2';
+  src: url("/fonts/baloo2/Baloo2-Bold.ttf") format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Baloo 2';
+  src: url('/fonts/baloo2/Baloo2-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Baloo 2';
+  src: url('/fonts/baloo2/Baloo2-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
 
 @theme {
 
@@ -8,6 +39,7 @@
   --color-btn-secondary:#fa793a;
   --color-btn-accent-light:#20b7fc;
   --color-btn-accent:#0fafff;
+  --font-family-baloo: "Baloo 2", cursive;
 }
 
 :root {
@@ -15,6 +47,10 @@
 }
 
 @layer base {
+
+  html, body {
+    font-family: "Baloo 2", ui-sans-serif, system-ui, sans-serif;
+  }
   .content-container {
     @apply max-w-[1440px] w-full mx-auto px-6;
   }
