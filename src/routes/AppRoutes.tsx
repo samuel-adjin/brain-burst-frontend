@@ -10,6 +10,7 @@ import AuthLayout from "../layout/templates/auth";
 import ForgotPassword from "../pages/ForgotPassword.tsx";
 import ResetPassword from "../pages/ResetPassword.tsx";
 import ConfirmAccountTemplate from "../features/confirm-sign-up/templates";
+import LeaderboardPage from "../pages/LeaderboardPage.tsx";
 
 const AppRoutes = () => {
     return (
@@ -17,6 +18,7 @@ const AppRoutes = () => {
             <Routes>
                 <Route path="/games" element={<GameLayout/>}>
                     <Route path="selection" element={<GameSelection/>}/>
+                    <Route path="score-board" element={<LeaderboardPage/>}/>
                     <Route path="game/:operator" element={<GameWithLevel/>}/>
                     <Route path="game/:operator/:level" element={<Game/>}/>
                 </Route>

@@ -47,3 +47,17 @@ export const setUserScore = async (userScore: number,level:string) => {
         console.error(err);
     }
 }
+
+export const fetchLeaderboard = async () => {
+    try {
+        const authHeader = await getAuthHeaders();
+        const leaderboard = await fetch(`${BACKEND_URL}/leaderboard`, {
+            headers: {
+                ...authHeader,
+            }
+        })
+        return await leaderboard.json();
+    }catch (e){
+        console.error(e);
+    }
+}

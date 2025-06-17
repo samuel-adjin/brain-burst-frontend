@@ -201,6 +201,7 @@ const GameTemplate = () => {
 
     return (
         <div className={"mt-5 text-white lg:space-y-32 space-y-20"}>
+
             <div className={"flex justify-around"}>
                 <div>
                     <ScoreTracker score={score}/>
@@ -245,6 +246,7 @@ const GameTemplate = () => {
                     </div>
                 )}
             </div>
+
         </div>
     );
 };

@@ -16,8 +16,7 @@ export const login = async (form: { email: string, password: string }) => {
         toast.success("Login successful!");
         return isSignedIn;
     } catch (err) {
-        console.error("Login error", err);
-        return null;
+        return err;
     }
 }
 

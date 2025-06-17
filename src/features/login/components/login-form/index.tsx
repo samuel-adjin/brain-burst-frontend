@@ -21,17 +21,27 @@ const LoginForm = () => {
                 navigate("/games/selection")
                 return;
             }
-            toast.error('Password or Email is incorrect.', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "colored",
-                transition: Bounce,
-            });
+            if(isSignedIn instanceof Error){
+                switch (isSignedIn.message) {
+                    case "UserAlreadyAuthenticatedException":
+                        navigate("/games/selection")
+                        break;
+                    default:
+                        toast.error('Password or Email is incorrect.', {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: false,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                            theme: "colored",
+                            transition: Bounce,
+                        });
+                }
+            }
+
+
             setForm({...form, password: ""})
         } catch (err) {
             console.error("Login error", err);

@@ -1,0 +1,42 @@
+import {useEffect, useState} from "react";
+import {fetchLeaderboard} from "../../../../lib/data/game.tsx";
+import Boards from "../boards";
+
+type Difficulty = 'easy' | 'medium' | 'hard';
+
+export interface ScoreEntry {
+    score: number;
+    user: string;
+    timestamp: string; // ISO 8601 format
+}
+
+export type Leaderboard = {
+    [key in Difficulty]: ScoreEntry[];
+};
+export const LEVELS:Difficulty[] = ["easy", "medium", "hard"];
+
+const ScoreBoard = () => {
+    const[score, setScore] = useState<Leaderboard>();
+    useEffect(() => {
+        const board = async ()=>{
+            const board = await fetchLeaderboard();
+            setScore(board);
+        }
+        board();
+    }, []);
+
+    return (
+       <div>
+           <div className="space-y-5 flex justify-around">
+               {
+                   LEVELS.map((level:Difficulty, index) => {
+                       const leaderboard = score ? score[level ] : []
+                       return <Boards score={leaderboard} level={level} key={index} />
+                   })
+               }
+           </div>
+       </div>
+
+    )
+}
+export default ScoreBoard
