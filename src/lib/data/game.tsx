@@ -61,3 +61,25 @@ export const fetchLeaderboard = async () => {
         console.error(e);
     }
 }
+
+export const gameOverMessage = (score: number) => {
+    let message ="";
+    switch (true) {
+        case score >= 500:
+            message = "Excellent work!";
+            break;
+        case score >= 200:
+            message = "Great job!";
+            break;
+        case score >= 100:
+            message = "Nice effort!";
+            break;
+        case score >= 50:
+            message = "Keep practicing!";
+            break;
+        default:
+            message=" Don't give up! Try again!"
+    }
+
+    return message;
+}

@@ -1,10 +1,11 @@
 import {useState} from "react";
 import Button from "../../../common/components/button";
-import {Login} from "../../../common/icons/login.tsx";
 import {forgotPassword} from "../../../../lib/data/auth.ts";
 import {Link} from "react-router-dom";
 import {useNavigate} from "react-router-dom";
 import {Bounce, ToastContainer} from "react-toastify";
+import {BackArrow} from "../../../common/icons/back-arrow.tsx";
+import {ResetUserPassword} from "../../../common/icons/reset-password.tsx";
 
 const ForgotPasswordForm = () => {
     const navigate = useNavigate();
@@ -35,11 +36,12 @@ const ForgotPasswordForm = () => {
                         <input type={"email"} className={"input-field lg:w-[20vw]"} onChange={(e) =>setEmail(e.target.value)} required={true}/>
                     </div>
                 <div className={"flex justify-start"}>
-                    <Button icon={<Login/>} label={"Reset password"} className={"bg-btn-accent-light w-[60vw] lg:w-[20vw] py-5 rounded-r-3xl justify-center"} onClick={handleSubmit}/>
+                    <Button icon={<ResetUserPassword/>} label={"Reset password"} className={"bg-btn-accent-light w-[60vw] lg:w-[20vw] py-5 rounded-r-3xl justify-center"} onClick={handleSubmit}/>
                 </div>
                 </form>
                 <Link to="/auth/login">
-                    <div className={"flex justify-center text-gray-600 text-md mt-5"}>
+                    <div className={"flex justify-center items-center gap-2 text-gray-600 text-md mt-5"}>
+                        <BackArrow/>
                         <h4>Back to login</h4>
                     </div>
                 </Link>

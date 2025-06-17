@@ -3,6 +3,7 @@ import {Target} from "../../../common/icons/target.tsx";
 import {Home} from "../../../common/icons/home.tsx";
 import {Refresh} from "../../../common/icons/refresh.tsx";
 import {Link} from "react-router-dom";
+import {gameOverMessage} from "../../../../lib/data/game.tsx";
 
 type GameOverProps = {
     score: number;
@@ -13,13 +14,14 @@ const GameOver = ({score}:GameOverProps) => {
         localStorage.removeItem("game-state");
         window.location.reload();
     };
+    const message = gameOverMessage(score);
     return (
         <div className="flex items-center justify-center min-h-[80vh]">
             <div className="rounded-lg p-7 bg-gray-300 text-center text-black">
                 <div className="space-y-10">
                     <h1 className="lg:text-5xl text-3xl font-bold my-3">Game Over</h1>
                     <div className="flex justify-center items-center gap-2">
-                        <h1 className="text-xl">Great Job</h1>
+                        <h1 className="text-xl">{message}</h1>
                         <Target className="text-red-500" />
                     </div>
                     <div>

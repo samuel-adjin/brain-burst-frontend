@@ -2,12 +2,13 @@ import Timer from "../../components/timer";
 import ScoreTracker from "../../components/score-tracker";
 import QuestionDisplay from "../../components/question-display";
 import UserLife, {TOTAL_LIVES} from "../../components/life";
-import {Suspense, useCallback, useEffect, useState} from "react";
+import { useCallback, useEffect, useState} from "react";
 import {type Operation} from "../../../../lib/data/questions.ts";
 import {useParams} from "react-router-dom";
 import AnswerInput from "../../components/answer-input";
 import GameOver from "../../components/game-over";
 import {fetchGame, setUserScore} from "../../../../lib/data/game.tsx";
+import QuestionSkeleton from "../../components/question-skeleton";
 
 type GameQuestion = {
     question: string,
@@ -53,7 +54,6 @@ const GameTemplate = () => {
                 const saved = localStorage.getItem(STORAGE_KEY);
                 if (saved && operator && level) {
                     const parsedState: SavedGameState = JSON.parse(saved);
-
                     if (parsedState.operator === operator && parsedState.level === level) {
                         setQuestionNumber(parsedState.questionNumber);
                         setScore(parsedState.score);
@@ -98,10 +98,11 @@ const GameTemplate = () => {
             }
         }
         saveScore();
-    }, [isGameOver, score]);
+    }, [isGameOver, level, score]);
 
     const fetchNewQuestion = useCallback(async () => {
         if (!operator || !level) return;
+        localStorage.removeItem(STORAGE_KEY);
 
         setIsLoading(true);
         try {
@@ -136,7 +137,6 @@ const GameTemplate = () => {
         setCorrectAnswerTextShow(isCorrect);
 
         const timeout = setTimeout(async () => {
-            // Update score and lives
             if (isCorrect) {
                 setScore(prev => {
                     return prev + 10;
@@ -221,26 +221,23 @@ const GameTemplate = () => {
                 </div>
             </div>
             <div className={"mx-auto flex flex-col justify-center items-center"}>
-                <Suspense fallback={<div>Loading...</div>}>
-                    {isLoading ? (
-                        <div>Loading question...</div>
-                    ) : question ? (
-                        <QuestionDisplay
-                            question={question.question}
-                            answer={showCorrectAnswer ? question.answer : null}
-                            correctAnswerTextShow={correctAnswerTextShow}
-                            questionNumber={questionNumber}
-                        />
-                    ) : (
-                        <div>Loading...</div>
-                    )}
-                </Suspense>
+                {isLoading ? (
+                    <QuestionSkeleton/>
+                ) : question ? (
+                    <QuestionDisplay
+                        question={question.question}
+                        answer={showCorrectAnswer ? question.answer : null}
+                        correctAnswerTextShow={correctAnswerTextShow}
+                        questionNumber={questionNumber}
+                    />
+                ) : (
+                    <div>Loading...</div>
+                )}
                 {!hideInput && question && (
                     <div>
                         <AnswerInput
                             setIsAnswered={setIsAnswered}
                             setIsRunning={setIsRunning}
-                            userAnswer={userAnswer}
                             setUserAnswer={setUserAnswer}
                         />
                     </div>

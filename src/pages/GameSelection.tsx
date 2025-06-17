@@ -6,7 +6,7 @@ import GameSelectionTemplate from "../features/game/templates/game-selection";
 
 const GameSelection = () => {
     return (
-        <div>
+        <div className={"overflow-y-hidden"}>
             <GameSelectionTemplate/>
         </div>
     )

@@ -15,40 +15,28 @@ const LoginForm = () => {
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         try {
-            const isSignedIn = await login({email: form.email, password: form.password});
-            if (isSignedIn) {
-                setForm({email: '', password: ''})
-                navigate("/games/selection")
+            const result = await login({ email: form.email, password: form.password });
+            if (result.success) {
+                setForm({ email: '', password: '' });
+                navigate("/games/selection");
                 return;
             }
-            if(isSignedIn instanceof Error){
-                switch (isSignedIn.message) {
-                    case "UserAlreadyAuthenticatedException":
-                        navigate("/games/selection")
-                        break;
-                    default:
-                        toast.error('Password or Email is incorrect.', {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: false,
-                            pauseOnHover: true,
-                            draggable: true,
-                            progress: undefined,
-                            theme: "colored",
-                            transition: Bounce,
-                        });
-                }
+            if (result.error === "UserAlreadyAuthenticatedException") {
+                navigate("/games/selection");
+            } else {
+                toast.error("Password or Email is incorrect", {
+                    position: "top-right",
+                    autoClose: 5000,
+                    theme: "colored",
+                    transition: Bounce,
+                });
             }
-
-
-            setForm({...form, password: ""})
+            setForm({ ...form, password: "" });
         } catch (err) {
             console.error("Login error", err);
-            setForm({...form, password: ''})
-
+            setForm({ ...form, password: "" });
         }
-    }
+    };
 
     return (
         <div>

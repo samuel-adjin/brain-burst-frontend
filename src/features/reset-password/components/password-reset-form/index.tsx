@@ -1,21 +1,22 @@
 import {type ChangeEvent, type FormEvent, useState} from "react";
 import Button from "../../../common/components/button";
-import {Login} from "../../../common/icons/login.tsx";
 import {resetUserPassword} from "../../../../lib/data/auth.ts";
-
+import {useNavigate} from "react-router-dom";
+import {ResetUserPassword} from "../../../common/icons/reset-password.tsx";
 
 
 const PasswordResetForm = () => {
-    const [form, setForm] = useState({ password: '' , confirmPassword: '' });
+    const [form, setForm] = useState({ password: '' , confirmPassword: '' ,code:''});
     const[showPassword, setShowPassword] = useState(false);
+    const navigate = useNavigate();
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         try {
-            if(form.password !== form.password) {
+            if(form.password !== form.confirmPassword) {
                 throw new Error("Passwords don't match");
             }
-            console.log("User logged in", form);
-            await resetUserPassword({email:"",password:form.password,confirmationCode:""});
+            await resetUserPassword({password:form.password,confirmationCode:form.code});
+            navigate("/auth/login");
         } catch (err) {
             console.error("Register error", err);
         }
@@ -24,6 +25,12 @@ const PasswordResetForm = () => {
         <div>
             <form className={"space-y-10"}>
                 <div className={"space-y-3"}>
+                    <div className="flex flex-col justify-between items-start gap-2 mt-2 text-white">
+                        <div>
+                            <label htmlFor="code" className={"text-sm"}>Confirmation code</label>
+                        </div>
+                        <input type={"number"} className={"input-field"}  onChange={(e) => setForm({ ...form, code: e.target.value })}/>
+                    </div>
                     <div className="flex flex-col justify-between items-start gap-2 mt-2 text-white">
                         <div>
                             <label htmlFor="password" className={"text-sm"}>Password</label>
@@ -40,7 +47,7 @@ const PasswordResetForm = () => {
                         <input type="checkbox"  value="show" onChange={(e: ChangeEvent<HTMLInputElement>)=>{setShowPassword(e.target.checked);}}/>
                         <label htmlFor="email" className={"text-gray-500 text-sm"}>Show password</label>
                     </div>
-                    <Button icon={<Login/>} label={"Reset password"} className={"bg-btn-secondary w-64 py-5 rounded-r-3xl justify-center"} onClick={handleSubmit}/>
+                    <Button icon={<ResetUserPassword/>} label={"Reset password"} className={"bg-btn-secondary w-64 py-5 rounded-r-3xl justify-center"} onClick={handleSubmit}/>
 
                 </div>
             </form>

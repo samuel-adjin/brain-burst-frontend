@@ -5,13 +5,11 @@ type AnswerInputProps ={
     setIsRunning:Dispatch<SetStateAction<boolean>>
     setIsAnswered: Dispatch<SetStateAction<boolean>>
     setUserAnswer: Dispatch<SetStateAction<number>>
-    userAnswer: number
 }
 
-const AnswerInput = ({setIsRunning,setIsAnswered,userAnswer,setUserAnswer}:AnswerInputProps) => {
+const AnswerInput = ({setIsRunning,setIsAnswered,setUserAnswer}:AnswerInputProps) => {
     const handleSubmit = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
-        console.log({userAnswer})
         setIsRunning(false);
         setIsAnswered(true)
     };
@@ -21,7 +19,7 @@ const AnswerInput = ({setIsRunning,setIsAnswered,userAnswer,setUserAnswer}:Answe
                 <div>
                     <label htmlFor="answer" className={"text-sm"}>Answer</label>
                 </div>
-                <input type={"number"} className={"block w-64 outline-1 rounded-md py-2 focus:outline-white px-3 text-sm"} value={userAnswer}
+                <input type={"number"} className={"block w-64 outline-1 rounded-md py-2 focus:outline-white px-3 text-sm"}
                        onChange={(e) => setUserAnswer(parseInt(e.target.value))} />
             </div>
             <Button label={"submit"} className={`bg-btn-accent my-5 `}  onClick={handleSubmit}/>

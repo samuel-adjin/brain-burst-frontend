@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import {fetchLeaderboard} from "../../../../lib/data/game.tsx";
 import Boards from "../boards";
+import {Loading} from "../../../common/icons/loading.tsx";
 
 type Difficulty = 'easy' | 'medium' | 'hard';
 
@@ -28,11 +29,13 @@ const ScoreBoard = () => {
     return (
        <div>
            <div className="space-y-5 flex lg:flex-row flex-col justify-around">
-               {
+               { score ?
                    LEVELS.map((level:Difficulty, index) => {
-                       const leaderboard = score ? score[level ] : []
+                       const leaderboard = score ? score[level] : []
                        return <Boards score={leaderboard} level={level} key={index} />
-                   })
+                   }) : <div className={"text-white"}>
+                       <Loading size={"40"}/>
+                   </div>
                }
            </div>
        </div>

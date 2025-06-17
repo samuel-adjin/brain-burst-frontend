@@ -10,7 +10,7 @@ const GameLayout = () => {
     useSessionExpiration()
     const navigate = useNavigate()
     return (
-        <div className="content-container  h-screen">
+        <div className="content-container lg:overflow-hidden lg:h-screen ">
             <div className={"flex justify-between my-5"}>
                <Link to="/games/selection">
                   <div>

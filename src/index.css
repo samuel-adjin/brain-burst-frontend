@@ -1,4 +1,17 @@
 @import "tailwindcss";
+
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+
 @font-face {
   font-family: 'Baloo 2';
   src: url('/fonts/baloo2/Baloo2-Regular.ttf') format('truetype');
@@ -59,5 +72,14 @@
   }
   .input-field{
     @apply bg-white block w-64 outline-1 rounded-md py-2 focus:outline-white px-3 text-sm text-black;
+  }
+  .scrollbar {
+    @apply [&::-webkit-scrollbar]:w-1
+    [&::-webkit-scrollbar-track]:rounded-full
+    [&::-webkit-scrollbar-track]:bg-gray-100
+    [&::-webkit-scrollbar-thumb]:rounded-full
+    [&::-webkit-scrollbar-thumb]:bg-gray-300
+    dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+    dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500
   }
 }

@@ -2,7 +2,7 @@ import ScoreBoard from "../components/score-board";
 
 const ScoreBoardTemplate = () => {
     return (
-        <div>
+        <div className={"overflow-hidden"}>
             <ScoreBoard/>
         </div>
     )
