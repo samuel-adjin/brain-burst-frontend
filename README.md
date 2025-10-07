@@ -46,12 +46,8 @@ Ensure you have the following installed and configured:
 git clone https://github.com/samuel-adjin/brain-burst-frontend.git
 cd brain-burst-frontend
 
-text
-
 ### 2. Install Dependencies
 npm install
-
-text
 
 ### 3. Environment Configuration
 
@@ -70,16 +66,12 @@ REACT_APP_AWS_REGION=us-east-1
 ### 4. Start Development Server
 npm start
 
-text
 The application will open at `http://localhost:3000`
 
 ### 5. Build for Production
 npm run build
 
-text
 Creates an optimized production build in the `build` folder.
-
-text
 
 ## 📦 Available Scripts
 
