@@ -1,54 +1,62 @@
-# React + TypeScript + Vite
+# 🧠 BrainBurst - React Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A serverless, cloud-native math challenge game built with React. Test your arithmetic skills across multiple difficulty levels and compete on the leaderboard!
 
-Currently, two official plugins are available:
+![React](https://img.shields.io/badge/React-18.x-61DAFB?logo=react)
+![AWS](https://img.shields.io/badge/AWS-Cognito%20%7C%20S3%20%7C%20CloudFront-FF9900?logo=amazon-aws)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🎯 Project Overview
 
-## Expanding the ESLint configuration
+BrainBurst is the frontend client for a serverless math game where users answer rapid-fire arithmetic questions within a 60-second time limit. The game features multiple operations, difficulty levels, real-time scoring, and multi-level leaderboards.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## ✨ Features
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+- 🔐 **User Authentication** - Secure sign-up/sign-in with Amazon Cognito
+- ⚡ **Dynamic Gameplay** - Choose from 4 operations (addition, subtraction, multiplication, division)
+- 🎚️ **Three Difficulty Levels** - Easy, Medium, and Hard challenges
+- ⏱️ **60-Second Timer** - Fast-paced gameplay with countdown
+- 📊 **Real-Time Scoring** - Track your performance instantly
+- 🏆 **Multi-Level Leaderboards** - Compete for top 10 in each difficulty level
+- 📧 **Achievement Notifications** - Receive congratulatory emails when you hit top 10
+- 📱 **Responsive Design** - Works seamlessly on desktop and mobile devices
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🛠️ Tech Stack
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- **Framework:** React 18.x
+- **State Management:** React Hooks (useState, useEffect, useContext)
+- **Authentication:** AWS Amplify + Amazon Cognito
+- **Styling:** CSS Modules / Tailwind CSS
+- **HTTP Client:** Axios
+- **Routing:** React Router v6
+- **Hosting:** Amazon S3 + CloudFront CDN
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## 📋 Prerequisites
+
+Before running this project, ensure you have:
+
+- Node.js (v16.x or higher)
+- npm 
+- AWS account with Cognito configured
+- Backend API Gateway URL
+
+## 🚀 Getting Started
+
+### 1. Clone the Repository
+### 2. Install Dependencies
+- npm install
+
+### 3. Configure Environment Variables
+Create a .env file in the root directory:
+envREACT_APP_API_URL=https://your-api-gateway-url.amazonaws.com/prod
+REACT_APP_COGNITO_USER_POOL_ID=your-user-pool-id
+REACT_APP_COGNITO_CLIENT_ID=your-client-id
+REACT_APP_AWS_REGION=us-east-1
+
+### 4. Run Development Server
+- npm start
+
+### 5. Build for Production
+- npm run build
+```bash
+
