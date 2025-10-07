@@ -46,9 +46,12 @@ Before running this project, ensure you have:
 ### 2. Install Dependencies
 - npm install
 
-### 3. Configure Environment Variables
-Create a .env file in the root directory:
-envREACT_APP_API_URL=https://your-api-gateway-url.amazonaws.com/prod
+### 3. ## Environment Configuration
+
+Create a `.env` file in the root directory of the project with the following environment variables:
+
+```env
+REACT_APP_API_URL=https://your-api-gateway-url.amazonaws.com/prod
 REACT_APP_COGNITO_USER_POOL_ID=your-user-pool-id
 REACT_APP_COGNITO_CLIENT_ID=your-client-id
 REACT_APP_AWS_REGION=us-east-1
@@ -58,5 +61,6 @@ REACT_APP_AWS_REGION=us-east-1
 
 ### 5. Build for Production
 - npm run build
+
 ```bash
 
